@@ -22,6 +22,12 @@ func main() {
 		GRPCListenerAddress: 8082,
 		ExpLoginTimeout:     15,
 		JWTSecret:           "SrTY3wmw80",
+		DB: config.DB{
+			User:     "rest_user",
+			Password: "rest_password",
+			Name:     "rest_db",
+			Port:     5432,
+		},
 	}
 
 	grpcServer, err := grpcserver.NewGRPCServer(ctx, &cfg, kitlog.With(logger, "type", "grpc server"))

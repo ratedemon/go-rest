@@ -6,7 +6,18 @@ option go_package="proto/auth";
 // import "validate/validate.proto";
 
 service AuthService {
+  rpc Signup(SignupRequest) returns (SignupResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
+}
+
+message SignupRequest {
+  string username = 1;
+  string password = 2;
+  string confirm_password = 3;
+}
+
+message SignupResponse {
+  string message = 1;
 }
 
 message LoginRequest {
@@ -17,8 +28,10 @@ message LoginRequest {
 message LoginResponse {
   int64 id = 1;
   string username = 2;
-  string name = 3;
-  int64 age = 4;
-  string email = 5;
-  string image = 6;
+  string first_name = 3;
+  string last_name = 4;
+  int64 age = 5;
+  string email = 6;
+  string image = 7;
+  string token = 8;
 }

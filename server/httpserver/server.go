@@ -6,6 +6,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/ratedemon/go-rest/api/middleware"
+
 	"github.com/ratedemon/go-rest/api/helper"
 	"github.com/ratedemon/go-rest/config"
 	"google.golang.org/grpc"
@@ -49,6 +51,8 @@ func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Ser
 	}
 
 	router := mux.NewRouter()
+	jwtMiddleware := middleware.NewJWTMiddleware(cfg)
+	router.Use(jwtMiddleware.JWTAuthentication)
 	http.Handle("/", router)
 
 	routes := api.InitRoutes(ctx, logger, grpcConn)

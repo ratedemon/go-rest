@@ -2,6 +2,8 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/go-kit/kit/log"
@@ -10,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// AuthHandler is gateway for auth endpoints
 type AuthHandler struct {
 	ctx        context.Context
 	log        log.Logger
@@ -28,14 +31,50 @@ func (ah *AuthHandler) RegisterRoutes() []helper.Route {
 	}
 }
 
+type loginBody struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func (ah *AuthHandler) login(ctx context.Context, req *http.Request) (interface{}, error) {
-	res, err := ah.grpcClient.Login(ctx, &protoauth.LoginRequest{})
+	var body loginBody
+	if err := json.NewDecoder(req.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+	if body.Username == "" || body.Password == "" {
+		return nil, errors.New("Required field is missing")
+	}
+	res, err := ah.grpcClient.Login(ctx, &protoauth.LoginRequest{
+		Username: body.Username,
+		Password: body.Password,
+	})
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
+type signUpBody struct {
+	loginBody
+	ConfirmPassword string `json:"confirm_password"`
+}
+
 func (ah *AuthHandler) signup(ctx context.Context, req *http.Request) (interface{}, error) {
-	return "method is not implemented", nil
+	var body signUpBody
+	if err := json.NewDecoder(req.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+	if body.Username == "" || body.Password == "" || body.ConfirmPassword == "" {
+		return nil, errors.New("Required field is missing")
+	}
+
+	res, err := ah.grpcClient.Signup(ctx, &protoauth.SignupRequest{
+		Username:        body.Username,
+		Password:        body.Password,
+		ConfirmPassword: body.ConfirmPassword,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }

@@ -19,6 +19,8 @@ services:
       POSTGRES_USER: rest_user
       POSTGRES_PASSWORD: rest_password
       POSTGRES_DB: rest_db
+    ports:
+      - '5432:5432'
 
   redis:
     image: redis:6.0.8-alpine
