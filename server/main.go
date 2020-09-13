@@ -20,6 +20,8 @@ func main() {
 	cfg := config.Config{
 		HTTPListenerAddress: 8081,
 		GRPCListenerAddress: 8082,
+		ExpLoginTimeout:     15,
+		JWTSecret:           "SrTY3wmw80",
 	}
 
 	grpcServer, err := grpcserver.NewGRPCServer(ctx, &cfg, kitlog.With(logger, "type", "grpc server"))

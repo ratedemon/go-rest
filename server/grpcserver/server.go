@@ -13,6 +13,7 @@ import (
 )
 
 type GRPCServer struct {
+	cfg      *config.Config
 	listener net.Listener
 	server   *grpc.Server
 	log      log.Logger
@@ -26,6 +27,7 @@ func NewGRPCServer(ctx context.Context, cfg *config.Config, log log.Logger) (*GR
 	}
 
 	server := &GRPCServer{
+		cfg:      cfg,
 		listener: listener,
 		server:   grpc.NewServer(),
 		log:      log,
@@ -41,7 +43,7 @@ func NewGRPCServer(ctx context.Context, cfg *config.Config, log log.Logger) (*GR
 func (s *GRPCServer) initServices() []string {
 	services := []string{}
 	{
-		authService := auth.NewAuthService(s.log)
+		authService := auth.NewAuthService(s.cfg, s.log)
 		authService.RegisterService(s.server)
 		services = append(services, "auth")
 	}
