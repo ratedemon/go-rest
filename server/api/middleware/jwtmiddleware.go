@@ -20,6 +20,15 @@ type Token struct {
 
 func (mware *JWTMiddleware) JWTAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		notAuth := []string{"/api/login", "/api/signup"}
+
+		for _, value := range notAuth {
+			if value == r.URL.Path {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
 		tokenHeader := r.Header.Get("Authorization")
 		if tokenHeader == "" {
 			w.WriteHeader(http.StatusForbidden)

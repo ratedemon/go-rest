@@ -7,7 +7,6 @@ services:
       - "8081:8081"
       - "8082:8082"
     depends_on:
-      - redis
       - postgres
     
   postgres:
@@ -20,4 +19,4 @@ services:
       POSTGRES_PASSWORD: rest_password
       POSTGRES_DB: rest_db
     ports:
-      - '5432:5432'
+      - "5432:5432"

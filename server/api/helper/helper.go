@@ -19,7 +19,13 @@ type ApiHandler interface {
 
 func HandleWrapper(f HandleFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		res, err := f(r.Context(), r)
+		var err error
+		var res interface{}
+		if userID, ok := r.Context().Value("user_id").(int64); ok {
+			res, err = f(contextWithUserID(context.Background(), userID), r)
+		} else {
+			res, err = f(r.Context(), r)
+		}
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 		}

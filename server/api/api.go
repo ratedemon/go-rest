@@ -8,6 +8,7 @@ import (
 
 	"github.com/ratedemon/go-rest/api/auth"
 	"github.com/ratedemon/go-rest/api/helper"
+	"github.com/ratedemon/go-rest/api/profile"
 )
 
 func registerRoute(ah helper.ApiHandler) []helper.Route {
@@ -21,6 +22,10 @@ func InitRoutes(ctx context.Context, log log.Logger, grpcConn *grpc.ClientConn) 
 	{
 		auth := auth.NewAuthHandler(ctx, log, grpcConn)
 		routes = append(routes, registerRoute(auth)...)
+	}
+	{
+		profile := profile.NewProfileHandler(ctx, log, grpcConn)
+		routes = append(routes, registerRoute(profile)...)
 	}
 
 	return routes

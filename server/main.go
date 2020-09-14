@@ -32,7 +32,7 @@ func main() {
 
 	grpcServer, err := grpcserver.NewGRPCServer(ctx, &cfg, kitlog.With(logger, "type", "grpc server"))
 	if err != nil {
-		logger.Log("msg", "Failed to create new HTTP server", "err", err)
+		logger.Log("msg", "Failed to create new GRPC server", "err", err)
 		os.Exit(1)
 	}
 	logger.Log("msg", "GRPC server is created")

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package profile;
+option go_package="proto/profile";
+
+// import "validate/validate.proto";
+
+service ProfileService {
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+}
+
+enum Sex {
+  UNKNOWN = 0;
+  MALE = 1;
+  FEMALE = 2;
+}
+
+message Profile {
+  int64 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int64 age = 4;
+  string email = 5; 
+  Sex sex = 6;
+}
+
+message CreateRequest {
+  Profile profile = 1;
+}
+
+message CreateResponse{
+  Profile profile = 1;
+  string created_at = 2;
+}
+
+message UpdateRequest {
+  Profile profile = 1;
+}
+
+message UpdateResponse {
+  Profile profile = 1;
+}
