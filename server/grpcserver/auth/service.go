@@ -60,10 +60,9 @@ func (as *AuthService) Login(ctx context.Context, req *pbauth.LoginRequest) (*pb
 	}
 
 	return &pbauth.LoginResponse{
-		Id:        int64(user.ID),
-		FirstName: "my_first_name",
-		Email:     "test_name@email.com",
-		Token:     token,
+		Id:       int64(user.ID),
+		Username: user.Username,
+		Token:    token,
 	}, nil
 }
 

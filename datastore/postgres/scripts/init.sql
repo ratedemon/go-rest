@@ -5,12 +5,15 @@ CREATE TABLE users(
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TYPE sex AS ENUM ('unknown', 'male', 'female');
+
 CREATE TABLE user_profiles(
   id SERIAL PRIMARY KEY,
   first_name VARCHAR NULL,
   last_name VARCHAR NULL,
   age SMALLINT NULL,
   email VARCHAR NULL,
+  sex sex DEFAULT 'unknown',
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   user_id INT NOT NULL,
   

@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
+	"github.com/ratedemon/go-rest/api/middleware"
 )
 
 type HandleFunc func(ctx context.Context, req *http.Request) (interface{}, error)
@@ -21,7 +23,8 @@ func HandleWrapper(f HandleFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		var res interface{}
-		if userID, ok := r.Context().Value("user_id").(int64); ok {
+		// fmt.Println(r.Context().Value(middleware.UserIDKey).(int64))
+		if userID, ok := r.Context().Value(middleware.UserIDKey).(int64); ok {
 			res, err = f(contextWithUserID(context.Background(), userID), r)
 		} else {
 			res, err = f(r.Context(), r)

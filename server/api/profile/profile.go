@@ -45,7 +45,7 @@ func (ph *ProfileHandler) create(ctx context.Context, req *http.Request) (interf
 	}
 	profileSex := protoprofile.Sex_UNKNOWN
 	if body.Sex != "" {
-		ps, ok := protoprofile.Sex_value[strings.ToLower(body.Sex)]
+		ps, ok := protoprofile.Sex_value[strings.ToUpper(body.Sex)]
 		if !ok {
 			return nil, errors.New("Sex is not defined")
 		}

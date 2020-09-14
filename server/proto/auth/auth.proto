@@ -28,10 +28,5 @@ message LoginRequest {
 message LoginResponse {
   int64 id = 1;
   string username = 2;
-  string first_name = 3;
-  string last_name = 4;
-  int64 age = 5;
-  string email = 6;
-  string image = 7;
-  string token = 8;
+  string token = 3;
 }

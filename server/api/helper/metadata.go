@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/ratedemon/go-rest/api/middleware"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -11,8 +12,8 @@ import (
 func contextWithUserID(ctx context.Context, userID int64) context.Context {
 	id := strconv.Itoa(int(userID))
 	md := metadata.Pairs(
-		"user_id", id,
+		middleware.UserIDKey, id,
 	)
 
-	return metadata.NewIncomingContext(ctx, md)
+	return metadata.NewOutgoingContext(ctx, md)
 }

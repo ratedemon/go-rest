@@ -6,19 +6,16 @@ import (
 	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/ratedemon/go-rest/config"
 )
-
-type JWTMiddleware struct {
-	cfg *config.Config
-}
 
 type Token struct {
 	UserID int64 `json:"user_id"`
 	jwt.StandardClaims
 }
 
-func (mware *JWTMiddleware) JWTAuthentication(next http.Handler) http.Handler {
+const UserIDKey = "user_id"
+
+func (mware *HTTPMiddleware) JWTAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		notAuth := []string{"/api/login", "/api/signup"}
 
@@ -65,12 +62,8 @@ func (mware *JWTMiddleware) JWTAuthentication(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user_id", tk.UserID)
+		ctx := context.WithValue(r.Context(), UserIDKey, tk.UserID)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
-}
-
-func NewJWTMiddleware(cfg *config.Config) *JWTMiddleware {
-	return &JWTMiddleware{cfg}
 }

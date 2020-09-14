@@ -19,6 +19,7 @@ import (
 	"github.com/go-kit/kit/log"
 )
 
+// Server is entity for HTTP server
 type Server struct {
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -32,13 +33,14 @@ type Server struct {
 	grpcConn *grpc.ClientConn
 }
 
+// NewServer creates new HTTP server
 func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Server, error) {
-	ctx, cancel := context.WithCancel(ctx)
-
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.HTTPListenerAddress))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create TCP listener: %v", err)
 	}
+
+	ctx, cancel := context.WithCancel(ctx)
 
 	httpServer := &http.Server{}
 
@@ -51,9 +53,10 @@ func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Ser
 	}
 
 	router := mux.NewRouter()
-	jwtMiddleware := middleware.NewJWTMiddleware(cfg)
+	jwtMiddleware := middleware.NewHTTPMiddleware(cfg, logger)
+	router = router.PathPrefix("/api").Subrouter()
 	router.Use(jwtMiddleware.JWTAuthentication)
-	http.Handle("/api", router)
+	http.Handle("/", router)
 
 	routes := api.InitRoutes(ctx, logger, grpcConn)
 	for _, r := range routes {

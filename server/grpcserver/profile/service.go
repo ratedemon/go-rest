@@ -29,11 +29,15 @@ func (ps *ProfileService) Create(ctx context.Context, req *pbprofile.CreateReque
 	if err != nil {
 		return nil, err
 	}
-	profile := models.Profile{
+	profile := models.UserProfile{
 		FirstName: req.Profile.FirstName,
 		LastName:  req.Profile.LastName,
 		Email:     req.Profile.Email,
 		Age:       int16(req.Profile.Age),
+		UserID:    userID,
+		User: models.User{
+			ID: uint(userID),
+		},
 	}
 	if err := ps.db.CreateProfile(userID, &profile); err != nil {
 		return nil, err
