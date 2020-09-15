@@ -69,7 +69,7 @@ func (ih *ImageHandler) delete(ctx context.Context, req *http.Request) (interfac
 
 func (ih *ImageHandler) RegisterRoutes() []helper.Route {
 	return []helper.Route{
-		{"/image", "POST", ih.upload},
 		{"/image/{id:[0-9]+}", "DELETE", ih.delete},
+		{"/image", "POST", ih.upload},
 	}
 }

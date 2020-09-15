@@ -68,6 +68,10 @@ func (ah *AuthHandler) signup(ctx context.Context, req *http.Request) (interface
 		return nil, errors.New("Required field is missing")
 	}
 
+	if body.Password != body.ConfirmPassword {
+		return nil, errors.New("Passwords are different")
+	}
+
 	res, err := ah.grpcClient.Signup(ctx, &protoauth.SignupRequest{
 		Username:        body.Username,
 		Password:        body.Password,

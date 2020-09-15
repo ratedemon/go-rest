@@ -53,9 +53,10 @@ func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Ser
 	}
 
 	router := mux.NewRouter()
-	jwtMiddleware := middleware.NewHTTPMiddleware(cfg, logger)
+	mware := middleware.NewHTTPMiddleware(cfg, logger)
 	router = router.PathPrefix("/api").Subrouter()
-	router.Use(jwtMiddleware.JWTAuthentication)
+	router.Use(mware.JWTAuthentication)
+	router.Use(mware.LoggingMiddleware)
 	http.Handle("/", router)
 
 	routes := api.InitRoutes(ctx, logger, grpcConn)
@@ -63,6 +64,9 @@ func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Ser
 		router.HandleFunc(r.Path, helper.HandleWrapper(r.HandleFunc)).Methods(r.Method)
 		logger.Log("msg", "Handler is registered", "path", r.Path, "method", r.Method)
 	}
+
+	fs := http.FileServer(http.Dir(cfg.Image.ImagePrefixPath))
+	http.Handle(fmt.Sprintf("/%s/", cfg.Image.ImagePrefixPath), http.StripPrefix(fmt.Sprintf("/%s/", cfg.Image.ImagePrefixPath), fs))
 
 	return &Server{
 		ctx:        ctx,
