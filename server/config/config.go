@@ -7,6 +7,11 @@ type DB struct {
 	Port     int
 }
 
+type Image struct {
+	SideMeasure     int
+	ImagePrefixPath string
+}
+
 type Config struct {
 	HTTPListenerAddress int
 	GRPCListenerAddress int
@@ -14,4 +19,6 @@ type Config struct {
 	JWTSecret           string
 
 	DB DB
+
+	Image Image
 }

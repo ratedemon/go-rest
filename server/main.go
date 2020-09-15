@@ -28,6 +28,10 @@ func main() {
 			Name:     "rest_db",
 			Port:     5432,
 		},
+		Image: config.Image{
+			SideMeasure:     160,
+			ImagePrefixPath: "files",
+		},
 	}
 
 	grpcServer, err := grpcserver.NewGRPCServer(ctx, &cfg, kitlog.With(logger, "type", "grpc server"))

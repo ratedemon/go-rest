@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package image;
+option go_package="proto/image";
+
+service ImageService {
+  rpc Upload(UploadRequest) returns (UploadResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message UploadRequest {
+  bytes image = 1;
+  string filename = 2;
+}
+
+message UploadResponse {
+  int64 id = 1;
+  string image_path = 2;
+}
+
+message DeleteRequest {
+  int64 id = 1;
+}
+
+message DeleteResponse {
+}

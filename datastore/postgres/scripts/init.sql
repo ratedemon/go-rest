@@ -15,7 +15,7 @@ CREATE TABLE user_profiles(
   email VARCHAR NULL,
   sex sex DEFAULT 'unknown',
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  user_id INT NOT NULL,
+  user_id INT UNIQUE NOT NULL,
   
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
@@ -23,7 +23,7 @@ CREATE TABLE user_profiles(
 CREATE TABLE user_images(
   id SERIAL PRIMARY KEY,
   image_path VARCHAR NOT NULL,
-  user_id INT NOT NULL,
+  user_id INT UNIQUE NOT NULL,
 
   FOREIGN KEY(user_id) REFERENCES users(id)
 );

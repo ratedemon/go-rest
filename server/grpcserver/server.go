@@ -8,6 +8,7 @@ import (
 	"github.com/ratedemon/go-rest/config"
 	"github.com/ratedemon/go-rest/datastore/db"
 	"github.com/ratedemon/go-rest/grpcserver/auth"
+	"github.com/ratedemon/go-rest/grpcserver/image"
 	"github.com/ratedemon/go-rest/grpcserver/profile"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -67,6 +68,11 @@ func (s *GRPCServer) initServices() []string {
 		profileService := profile.NewProfileService(s.cfg, s.log, s.db)
 		profileService.RegisterService(s.server)
 		services = append(services, "profile")
+	}
+	{
+		imageService := image.NewImageService(s.cfg, s.log, s.db)
+		imageService.RegisterService(s.server)
+		services = append(services, "image")
 	}
 
 	return services

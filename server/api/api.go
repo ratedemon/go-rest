@@ -8,6 +8,7 @@ import (
 
 	"github.com/ratedemon/go-rest/api/auth"
 	"github.com/ratedemon/go-rest/api/helper"
+	"github.com/ratedemon/go-rest/api/image"
 	"github.com/ratedemon/go-rest/api/profile"
 )
 
@@ -26,6 +27,10 @@ func InitRoutes(ctx context.Context, log log.Logger, grpcConn *grpc.ClientConn) 
 	{
 		profile := profile.NewProfileHandler(ctx, log, grpcConn)
 		routes = append(routes, registerRoute(profile)...)
+	}
+	{
+		image := image.NewImageHandler(ctx, log, grpcConn)
+		routes = append(routes, registerRoute(image)...)
 	}
 
 	return routes
