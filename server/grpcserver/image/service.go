@@ -47,13 +47,6 @@ func (is *ImageService) Upload(ctx context.Context, req *pbimage.UploadRequest) 
 	}
 
 	r := bytes.NewReader(req.Image)
-	imgConfig, _, err := image.DecodeConfig(r)
-	if err != nil {
-		return nil, err
-	}
-
-	// is.log.Log("height", imgConfig.Height)
-	r = bytes.NewReader(req.Image)
 	img, _, err := image.Decode(r)
 	if err != nil {
 		return nil, err
@@ -67,23 +60,9 @@ func (is *ImageService) Upload(ctx context.Context, req *pbimage.UploadRequest) 
 	}
 	defer out.Close()
 
-	if imgConfig.Height > is.cfg.Image.SideMeasure || imgConfig.Width > is.cfg.Image.SideMeasure {
-		h, w := is.cfg.Image.SideMeasure, is.cfg.Image.SideMeasure
-		if imgConfig.Width > is.cfg.Image.SideMeasure {
-			h = 0
-		}
-		if imgConfig.Height > is.cfg.Image.SideMeasure && h != 0 {
-			w = 0
-		}
-
-		m := resize.Resize(uint(w), uint(h), img, resize.Lanczos3)
-		if err = jpeg.Encode(out, m, nil); err != nil {
-			return nil, err
-		}
-	} else {
-		if err = jpeg.Encode(out, img, nil); err != nil {
-			return nil, err
-		}
+	m := resize.Thumbnail(uint(is.cfg.Image.SideMeasure), uint(is.cfg.Image.SideMeasure), img, resize.Lanczos3)
+	if err = jpeg.Encode(out, m, nil); err != nil {
+		return nil, err
 	}
 
 	imageModel := models.UserImage{
