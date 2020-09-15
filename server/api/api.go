@@ -10,6 +10,7 @@ import (
 	"github.com/ratedemon/go-rest/api/helper"
 	"github.com/ratedemon/go-rest/api/image"
 	"github.com/ratedemon/go-rest/api/profile"
+	"github.com/ratedemon/go-rest/api/user"
 )
 
 func registerRoute(ah helper.ApiHandler) []helper.Route {
@@ -31,6 +32,10 @@ func InitRoutes(ctx context.Context, log log.Logger, grpcConn *grpc.ClientConn) 
 	{
 		image := image.NewImageHandler(ctx, log, grpcConn)
 		routes = append(routes, registerRoute(image)...)
+	}
+	{
+		user := user.NewUserHandler(ctx, log, grpcConn)
+		routes = append(routes, registerRoute(user)...)
 	}
 
 	return routes

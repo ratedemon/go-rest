@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package profile;
+option go_package="proto/user";
+
+// import "validate/validate.proto";
+
+service UserService {
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc List(ListRequest) returns (ListResponse);
+}
+
+message User {
+  int64 id = 1;
+  string username = 2;
+  string first_name = 3;
+  string last_name = 4;
+  int64 age = 5;
+  string email = 6;
+  string sex = 7;
+  string image_path = 8; 
+}
+
+message GetRequest {
+  int64 id = 1;
+}
+
+message GetResponse {
+  User user = 1;
+}
+
+message ListRequest {
+}
+
+message ListResponse {
+  repeated User users = 1;
+}

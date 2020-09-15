@@ -2,6 +2,7 @@ package profile
 
 import (
 	"context"
+	"strings"
 
 	"github.com/ratedemon/go-rest/datastore/models"
 
@@ -35,9 +36,7 @@ func (ps *ProfileService) Create(ctx context.Context, req *pbprofile.CreateReque
 		Email:     req.Profile.Email,
 		Age:       int16(req.Profile.Age),
 		UserID:    userID,
-		User: models.User{
-			ID: uint(userID),
-		},
+		Sex:       strings.ToLower(req.Profile.Sex.String()),
 	}
 	if err := ps.db.CreateProfile(userID, &profile); err != nil {
 		return nil, err

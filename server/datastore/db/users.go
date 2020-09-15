@@ -21,3 +21,25 @@ func (db *DB) FindUserByUsername(username string, user *models.User) error {
 
 	return nil
 }
+
+func (db *DB) FindUserById(userID int64) (*models.User, error) {
+	user := &models.User{}
+
+	result := db.db.Joins("Image").Joins("Profile").First(&user, userID)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return user, nil
+}
+
+func (db *DB) FindAllUsers(userID int64) ([]models.User, error) {
+	users := []models.User{}
+
+	result := db.db.Joins("Image").Joins("Profile").Where("users.id != ?", userID).Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
+}

@@ -8,4 +8,7 @@ type User struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	CreatedAt time.Time
+
+	Image   UserImage   `gorm:"foreignKey:UserID"`
+	Profile UserProfile `gorm:"foreignKey:UserID"`
 }

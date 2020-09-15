@@ -9,7 +9,8 @@ type UserProfile struct {
 	LastName  string `json:"last_name"`
 	Age       int16  `json:"age"`
 	Email     string `json:"email"`
+	Sex       string `json:"sex"`
 	CreatedAt time.Time
 	UserID    int64 `gorm:"column:user_id" json:"user_id"`
-	User      User  `gorm:"foreignKey:UserID"`
+	// User      User  `gorm:"foreignKey:UserID"`
 }
