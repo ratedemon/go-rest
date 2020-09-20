@@ -4,51 +4,35 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/ratedemon/go-rest/api/helper"
 	"github.com/stretchr/testify/require"
 )
 
 type MockedServer struct {
 	R      *require.Assertions
-	Server *httptest.Server
-	Client *http.Client
+	Router *mux.Router
+	// Client *http.Client
 }
 
-// Close closes underlying HTTP server
-func (m *MockedServer) Close() {
-	m.Server.Close()
-}
-
-// NewHandler returns a new testing handler for the provided HTTP routes
-func NewHandler(t *testing.T, routes []helper.Route) http.Handler {
-	r := http.NewServeMux()
+func newRouter(routes []helper.Route) *mux.Router {
+	r := mux.NewRouter()
 	for _, route := range routes {
-		r.HandleFunc(route.Path, helper.HandleWrapper(route.HandleFunc))
+		r.HandleFunc(route.Path, helper.HandleWrapper(route.HandleFunc)).Methods(route.Method)
 	}
 	return r
 }
 
-func NewServer(t *testing.T, routes []helper.Route) *httptest.Server {
-	return httptest.NewServer(NewHandler(t, routes))
-}
-
-// NewMockedServer creates new gateway helper
-func NewMockedServer(t *testing.T, server *httptest.Server) *MockedServer {
+func NewServer(t *testing.T, routes []helper.Route) *MockedServer {
 	return &MockedServer{
 		R:      require.New(t),
-		Server: server,
-		Client: http.DefaultClient,
+		Router: newRouter(routes),
 	}
-}
-
-// NewMockedServerRoutes creates new gateway helper with routes
-func NewMockedServerRoutes(t *testing.T, routes []helper.Route) *MockedServer {
-	return NewMockedServer(t, NewServer(t, routes))
 }
 
 // Do makes a HTTP requests and returns response as JSON body
@@ -58,23 +42,29 @@ func (m *MockedServer) Do(method, path string, jsonBody string) (int, string, er
 	if len(jsonBody) != 0 {
 		reqBody = bytes.NewBufferString(jsonBody)
 	}
-	req, err := http.NewRequest(method, m.Server.URL+path, reqBody)
+	req, err := http.NewRequest(method, path, reqBody)
 	if err != nil {
 		return 0, "", fmt.Errorf("failed to prepare request: %w", err)
 	}
 
-	// do HTTP request
-	resp, err := m.Client.Do(req)
-	if err != nil {
-		return 0, "", fmt.Errorf("failed to do request: %w", err)
-	}
-	defer resp.Body.Close()
+	w := httptest.NewRecorder()
 
-	// read HTTP response
-	data, err := ioutil.ReadAll(resp.Body)
+	m.Router.ServeHTTP(w, req)
+
+	return w.Code, w.Body.String(), nil
+}
+
+// DoFile makes a HTTP requests with files inside
+func (m *MockedServer) DoFile(method, path string, body *bytes.Buffer, writer *multipart.Writer) (int, string, error) {
+	req, err := http.NewRequest(method, path, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	if err != nil {
-		return 0, "", fmt.Errorf("failed to read response: %w", err)
+		return 0, "", fmt.Errorf("failed to prepare request: %w", err)
 	}
 
-	return resp.StatusCode, string(data), nil
+	w := httptest.NewRecorder()
+
+	m.Router.ServeHTTP(w, req)
+
+	return w.Code, w.Body.String(), nil
 }

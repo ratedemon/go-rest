@@ -50,8 +50,7 @@ func (c *mockUserClient) List(
 func Test_UserHandler(t *testing.T) {
 	var c mockUserClient
 
-	mock := apitest.NewMockedServerRoutes(t, (&UserHandler{context.Background(), log.NewNopLogger(), &c}).RegisterRoutes())
-	defer mock.Close()
+	mock := apitest.NewServer(t, (&UserHandler{context.Background(), log.NewNopLogger(), &c}).RegisterRoutes())
 
 	t.Run("list", func(t *testing.T) {
 		c.reset()
@@ -81,6 +80,35 @@ func Test_UserHandler(t *testing.T) {
 		)
 		mock.R.JSONEq(
 			`{"users":[{"id":1,"username":"john","image_path":"files/admin.jpg"},{"id":2,"username":"sam","first_name":"adam","last_name":"friend"}]}`,
+			body,
+		)
+	})
+
+	t.Run("get single user", func(t *testing.T) {
+		c.reset()
+		c.response = &protouser.GetResponse{
+			User: &protouser.User{
+				Id:        1,
+				Username:  "john",
+				FirstName: "John",
+				LastName:  "Doe",
+				Age:       18,
+				ImagePath: "files/admin.jpg",
+			},
+		}
+
+		status, body, err := mock.Do(http.MethodGet, "/users/1", "")
+		mock.R.NoError(err)
+		mock.R.Equal(http.StatusOK, status)
+
+		mock.R.EqualValues(
+			&protouser.GetRequest{
+				Id: 1,
+			},
+			c.request,
+		)
+		mock.R.JSONEq(
+			`{"user":{"id":1,"username":"john","image_path":"files/admin.jpg", "first_name":"John", "last_name": "Doe", "age": 18}}`,
 			body,
 		)
 	})

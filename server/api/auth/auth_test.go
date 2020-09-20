@@ -50,8 +50,7 @@ func (c *mockAuthClient) Signup(
 func Test_AuthHandler(t *testing.T) {
 	var c mockAuthClient
 
-	mock := apitest.NewMockedServerRoutes(t, (&AuthHandler{context.Background(), log.NewNopLogger(), &c}).RegisterRoutes())
-	defer mock.Close()
+	mock := apitest.NewServer(t, (&AuthHandler{context.Background(), log.NewNopLogger(), &c}).RegisterRoutes())
 
 	t.Run("login", func(t *testing.T) {
 		c.reset()

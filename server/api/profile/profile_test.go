@@ -50,8 +50,7 @@ func (c *mockProfileClient) Update(
 func Test_ProfileHandler(t *testing.T) {
 	var c mockProfileClient
 
-	mock := apitest.NewMockedServerRoutes(t, (&ProfileHandler{context.Background(), log.NewNopLogger(), &c}).RegisterRoutes())
-	defer mock.Close()
+	mock := apitest.NewServer(t, (&ProfileHandler{context.Background(), log.NewNopLogger(), &c}).RegisterRoutes())
 
 	t.Run("create", func(t *testing.T) {
 		c.reset()
@@ -81,6 +80,38 @@ func Test_ProfileHandler(t *testing.T) {
 		)
 		mock.R.JSONEq(
 			`{"id":1,"first_name":"John","last_name":"Doe","age":45,"email":"john_doe@gmail.com","sex":1}`,
+			body,
+		)
+	})
+
+	t.Run("update", func(t *testing.T) {
+		c.reset()
+		profile := &protoprofile.Profile{
+			FirstName: "John",
+			LastName:  "Doe",
+			Age:       45,
+			Email:     "john_doe@gmail.com",
+			Sex:       protoprofile.Sex_MALE,
+			Id:        1,
+		}
+		c.response = &protoprofile.UpdateResponse{
+			Profile: profile,
+		}
+
+		status, body, err := mock.Do(http.MethodPut, "/profile/1", "{\"first_name\": \"John\", \"last_name\": \"Doe\", \"age\": 45, \"email\": \"john_doe@gmail.com\", \"sex\": \"male\"}")
+		mock.R.NoError(err)
+		mock.R.Equal(http.StatusOK, status)
+
+		mock.R.EqualValues(
+			&protoprofile.UpdateRequest{
+				Profile: profile,
+			},
+			c.request,
+		)
+		mock.R.JSONEq(
+			`{
+				"profile": {"id":1,"first_name":"John","last_name":"Doe","age":45,"email":"john_doe@gmail.com","sex":1}	
+			}`,
 			body,
 		)
 	})

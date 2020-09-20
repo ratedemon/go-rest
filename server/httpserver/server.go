@@ -21,8 +21,6 @@ import (
 
 // Server is entity for HTTP server
 type Server struct {
-	ctx    context.Context
-	cancel context.CancelFunc
 	cfg    *config.Config
 	logger log.Logger
 
@@ -39,8 +37,6 @@ func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Ser
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create TCP listener: %v", err)
 	}
-
-	ctx, cancel := context.WithCancel(ctx)
 
 	httpServer := &http.Server{}
 
@@ -69,8 +65,6 @@ func NewServer(ctx context.Context, cfg *config.Config, logger log.Logger) (*Ser
 	http.Handle(fmt.Sprintf("/%s/", cfg.Image.ImagePrefixPath), http.StripPrefix(fmt.Sprintf("/%s/", cfg.Image.ImagePrefixPath), fs))
 
 	return &Server{
-		ctx:        ctx,
-		cancel:     cancel,
 		cfg:        cfg,
 		logger:     logger,
 		router:     router,

@@ -80,7 +80,8 @@ func (ph *ProfileHandler) update(ctx context.Context, req *http.Request) (interf
 	if err := json.NewDecoder(req.Body).Decode(&body); err != nil {
 		return nil, err
 	}
-	res, err := ph.grpcClient.Update(ctx, &protoprofile.UpdateRequest{
+
+	r := &protoprofile.UpdateRequest{
 		Profile: &protoprofile.Profile{
 			Id:        id,
 			FirstName: body.FirstName,
@@ -88,7 +89,20 @@ func (ph *ProfileHandler) update(ctx context.Context, req *http.Request) (interf
 			Age:       body.Age,
 			Email:     body.Email,
 		},
-	})
+	}
+
+	if body.Sex != "" {
+		r.Profile.Sex = protoprofile.Sex_UNKNOWN
+		if body.Sex != "" {
+			ps, ok := protoprofile.Sex_value[strings.ToUpper(body.Sex)]
+			if !ok {
+				return nil, errors.New("Sex is not defined")
+			}
+			r.Profile.Sex = protoprofile.Sex(ps)
+		}
+	}
+
+	res, err := ph.grpcClient.Update(ctx, r)
 	if err != nil {
 		return nil, err
 	}
