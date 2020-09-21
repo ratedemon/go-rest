@@ -30,6 +30,7 @@ func (ps *ProfileService) Create(ctx context.Context, req *pbprofile.CreateReque
 	if err != nil {
 		return nil, err
 	}
+
 	profile := models.UserProfile{
 		FirstName: req.Profile.FirstName,
 		LastName:  req.Profile.LastName,
@@ -42,19 +43,69 @@ func (ps *ProfileService) Create(ctx context.Context, req *pbprofile.CreateReque
 		return nil, err
 	}
 
+	createdProfile := &pbprofile.Profile{
+		Id:        int64(profile.ID),
+		FirstName: profile.FirstName,
+		LastName:  profile.LastName,
+		Email:     profile.Email,
+		Age:       int64(profile.Age),
+	}
+
+	if profile.Sex != "" {
+		createdProfile.Sex = pbprofile.Sex(pbprofile.Sex_value[strings.ToUpper(profile.Sex)])
+	}
+
 	return &pbprofile.CreateResponse{
-		Profile: &pbprofile.Profile{
-			Id:        int64(profile.ID),
-			FirstName: profile.FirstName,
-			LastName:  profile.LastName,
-			Email:     profile.Email,
-			Age:       int64(profile.Age),
-		},
+		Profile: createdProfile,
 	}, nil
 }
 
 func (ps *ProfileService) Update(ctx context.Context, req *pbprofile.UpdateRequest) (*pbprofile.UpdateResponse, error) {
-	return &pbprofile.UpdateResponse{}, nil
+	userID, err := helper.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	profile, err := ps.db.FindProfile(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.Profile.FirstName != "" {
+		profile.FirstName = req.Profile.FirstName
+	}
+	if req.Profile.LastName != "" {
+		profile.LastName = req.Profile.LastName
+	}
+	if req.Profile.Email != "" {
+		profile.Email = req.Profile.Email
+	}
+	if req.Profile.Age != 0 {
+		profile.Age = int16(req.Profile.Age)
+	}
+	if req.Profile.Sex.String() != "" {
+		profile.Sex = strings.ToLower(req.Profile.Sex.String())
+	}
+
+	if err := ps.db.UpdateProfile(profile); err != nil {
+		return nil, err
+	}
+
+	updatedProfile := &pbprofile.Profile{
+		Id:        int64(profile.ID),
+		FirstName: profile.FirstName,
+		LastName:  profile.LastName,
+		Email:     profile.Email,
+		Age:       int64(profile.Age),
+	}
+
+	if profile.Sex != "" {
+		updatedProfile.Sex = pbprofile.Sex(pbprofile.Sex_value[strings.ToUpper(profile.Sex)])
+	}
+
+	return &pbprofile.UpdateResponse{
+		Profile: updatedProfile,
+	}, nil
 }
 
 func (ps *ProfileService) RegisterService(s *grpc.Server) {

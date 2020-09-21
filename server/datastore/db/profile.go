@@ -21,14 +21,17 @@ func (db *DB) CreateProfile(userID int64, profile *models.UserProfile) error {
 	return nil
 }
 
-func (db *DB) UpdateProfile(userID int64, profile *models.UserProfile) error {
+func (db *DB) FindProfile(userID int64) (*models.UserProfile, error) {
 	var existProfile models.UserProfile
 	result := db.db.First(&existProfile, "user_id = ?", userID)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
-	
-	result = db.db.Model(existProfile).Updates(profile)
+	return &existProfile, nil
+}
+
+func (db *DB) UpdateProfile(profile *models.UserProfile) error {
+	result := db.db.Save(profile)
 	if result.Error != nil {
 		return result.Error
 	}
