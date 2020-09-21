@@ -17,31 +17,36 @@ func main() {
 	logger := kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stdout))
 	logger = kitlog.With(logger, "ts", kitlog.DefaultTimestampUTC, "caller", kitlog.DefaultCaller)
 
-	cfg := config.Config{
-		HTTPListenerAddress: 8081,
-		GRPCListenerAddress: 8082,
-		ExpLoginTimeout:     15,
-		JWTSecret:           "SrTY3wmw80",
-		DB: config.DB{
-			User:     "rest_user",
-			Password: "rest_password",
-			Name:     "rest_db",
-			Port:     5432,
-		},
-		Image: config.Image{
-			SideMeasure:     160,
-			ImagePrefixPath: "files",
-		},
+	cfg, err := config.NewConfig()
+	if err != nil {
+		logger.Log("msg", "Failed to create config", "err", err)
+		os.Exit(1)
 	}
+	// cfg := config.Config{
+	// 	HTTPListenerAddress: 8081,
+	// 	GRPCListenerAddress: 8082,
+	// 	ExpLoginTimeout:     15,
+	// 	JWTSecret:           "SrTY3wmw80",
+	// 	DB: config.DB{
+	// 		User:     "rest_user",
+	// 		Password: "rest_password",
+	// 		Name:     "rest_db",
+	// 		Port:     5432,
+	// 	},
+	// 	Image: config.Image{
+	// 		SideMeasure:     160,
+	// 		ImagePrefixPath: "files",
+	// 	},
+	// }
 
-	grpcServer, err := grpcserver.NewGRPCServer(ctx, &cfg, kitlog.With(logger, "type", "grpc server"))
+	grpcServer, err := grpcserver.NewGRPCServer(ctx, cfg, kitlog.With(logger, "type", "grpc server"))
 	if err != nil {
 		logger.Log("msg", "Failed to create new GRPC server", "err", err)
 		os.Exit(1)
 	}
 	logger.Log("msg", "GRPC server is created")
 
-	s, err := httpserver.NewServer(ctx, &cfg, kitlog.With(logger, "type", "http server"))
+	s, err := httpserver.NewServer(ctx, cfg, kitlog.With(logger, "type", "http server"))
 	if err != nil {
 		logger.Log("msg", "Failed to create new HTTP server", "err", err)
 		os.Exit(1)

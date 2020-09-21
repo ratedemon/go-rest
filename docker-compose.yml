@@ -10,6 +10,17 @@ services:
       - "8082:8082"
     depends_on:
       - postgres
+    environment:
+      HTTP_LISTENER_PORT: "${HTTP_LISTENER_PORT:-8081}"
+      GRPC_LISTENER_PORT: "${GRPC_LISTENER_PORT:-8082}"
+      LOGIN_TIMEOUT: "${LOGIN_TIMEOUT:-15}"
+      JWT_SECRET: "${JWT_SECRET:-SrTY3wmw80}"
+      DB_USER: "${DB_USER:-rest_user}"
+      DB_PASSWORD: "${DB_PASSWORD:-rest_password}"
+      DB_NAME: "${DB_NAME:-rest_db}"
+      DB_PORT: "${DB_PORT:-5432}"
+      # SIDE_MEASURE: "{SIDE_MEASURE:-160}"
+      IMAGE_PREFIX_PATH: "${IMAGE_PREFIX_PATH:-files}"
     
   postgres:
     build: ./datastore/postgres
@@ -17,8 +28,8 @@ services:
       - ./datastore/postgres/volume:/var/lib/postgresql/data
       - ./datastore/postgres/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      POSTGRES_USER: rest_user
-      POSTGRES_PASSWORD: rest_password
-      POSTGRES_DB: rest_db
+      POSTGRES_USER: "${DB_USER:-rest_user}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-rest_password}"
+      POSTGRES_DB: "${DB_NAME:-rest_db}"
     ports:
       - "5432:5432"

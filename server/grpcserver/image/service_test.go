@@ -82,7 +82,7 @@ func imageTest(f func(t *tester)) func(*testing.T) {
 
 		logger := log.NewNopLogger()
 		cfg := &config.Config{
-			Image: config.Image{
+			Image: &config.Image{
 				ImagePrefixPath: "test",
 				SideMeasure:     sideMeasure,
 			},
