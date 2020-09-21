@@ -3,6 +3,8 @@ syntax = "proto3";
 package image;
 option go_package="proto/image";
 
+import "validate/validate.proto";
+
 service ImageService {
   rpc Upload(UploadRequest) returns (UploadResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
@@ -19,7 +21,7 @@ message UploadResponse {
 }
 
 message DeleteRequest {
-  int64 id = 1;
+  int64 id = 1[(validate.rules).int64.gt = 0];
 }
 
 message DeleteResponse {

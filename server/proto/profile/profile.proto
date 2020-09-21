@@ -3,7 +3,7 @@ syntax = "proto3";
 package profile;
 option go_package="proto/profile";
 
-// import "validate/validate.proto";
+import "validate/validate.proto";
 
 service ProfileService {
   rpc Create(CreateRequest) returns (CreateResponse);
@@ -17,11 +17,11 @@ enum Sex {
 }
 
 message Profile {
-  int64 id = 1;
-  string first_name = 2;
-  string last_name = 3;
-  int64 age = 4;
-  string email = 5; 
+  int64 id = 1[(validate.rules).int64.gt = 0];
+  string first_name = 2[(validate.rules).string.min_len = 3];
+  string last_name = 3[(validate.rules).string.min_len = 3];
+  int64 age = 4[(validate.rules).int64.gt = 7];
+  string email = 5[(validate.rules).string.email = true]; 
   Sex sex = 6;
 }
 

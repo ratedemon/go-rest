@@ -81,6 +81,10 @@ func (is *ImageService) Upload(ctx context.Context, req *pbimage.UploadRequest) 
 }
 
 func (is *ImageService) Delete(ctx context.Context, req *pbimage.DeleteRequest) (*pbimage.DeleteResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	userID, err := helper.GetUserID(ctx)
 	if err != nil {
 		return nil, err

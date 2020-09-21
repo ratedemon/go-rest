@@ -26,6 +26,10 @@ func NewProfileService(cfg *config.Config, log log.Logger, db *db.DB) *ProfileSe
 }
 
 func (ps *ProfileService) Create(ctx context.Context, req *pbprofile.CreateRequest) (*pbprofile.CreateResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	userID, err := helper.GetUserID(ctx)
 	if err != nil {
 		return nil, err
@@ -61,6 +65,10 @@ func (ps *ProfileService) Create(ctx context.Context, req *pbprofile.CreateReque
 }
 
 func (ps *ProfileService) Update(ctx context.Context, req *pbprofile.UpdateRequest) (*pbprofile.UpdateResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	userID, err := helper.GetUserID(ctx)
 	if err != nil {
 		return nil, err

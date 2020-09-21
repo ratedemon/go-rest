@@ -29,6 +29,10 @@ func NewAuthService(cfg *config.Config, log log.Logger, db *db.DB) *AuthService 
 }
 
 func (as *AuthService) Signup(ctx context.Context, req *pbauth.SignupRequest) (*pbauth.SignupResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	if req.Password != req.ConfirmPassword {
 		return nil, status.Errorf(codes.InvalidArgument, "`confirm_password` and`password` do not match")
 	}
@@ -52,6 +56,10 @@ func (as *AuthService) Signup(ctx context.Context, req *pbauth.SignupRequest) (*
 }
 
 func (as *AuthService) Login(ctx context.Context, req *pbauth.LoginRequest) (*pbauth.LoginResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	var user models.User
 	if err := as.db.FindUserByUsername(req.Username, &user); err != nil {
 		return nil, status.Errorf(codes.Unknown, fmt.Sprintf("Failed to find the user: %v", err))

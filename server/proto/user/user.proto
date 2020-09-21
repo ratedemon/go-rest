@@ -3,7 +3,7 @@ syntax = "proto3";
 package profile;
 option go_package="proto/user";
 
-// import "validate/validate.proto";
+import "validate/validate.proto";
 
 service UserService {
   rpc Get(GetRequest) returns (GetResponse);
@@ -22,7 +22,7 @@ message User {
 }
 
 message GetRequest {
-  int64 id = 1;
+  int64 id = 1[(validate.rules).int64.gt = 0];
 }
 
 message GetResponse {

@@ -11,18 +11,23 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/envoyproxy/protoc-gen-validate v0.4.1
 	github.com/go-kit/kit v0.10.0
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.8.0
+	github.com/iancoleman/strcase v0.1.1 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
+	github.com/spf13/afero v1.4.0 // indirect
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
+	golang.org/x/tools v0.0.0-20200918232735-d647fc253266 // indirect
 	google.golang.org/grpc v1.32.0
-	google.golang.org/protobuf v1.23.0
+	google.golang.org/protobuf v1.25.0
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/gorm v1.20.1
 )

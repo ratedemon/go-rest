@@ -20,6 +20,10 @@ type UserService struct {
 }
 
 func (us *UserService) Get(ctx context.Context, req *pbuser.GetRequest) (*pbuser.GetResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	user, err := us.db.FindUserById(req.Id)
 	if err != nil {
 		return nil, err
